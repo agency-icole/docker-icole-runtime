@@ -1,0 +1,10 @@
+client:
+  url: http://172.18.111.33:3100/api/prom/push
+
+scrape_configs:
+  - job_name: java
+    entry_parser: raw
+    static_configs:
+      - labels:
+          job: varlogs
+          __path__: /app/log/*log

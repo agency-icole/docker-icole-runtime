@@ -1,0 +1,1 @@
+docker build . -t icole-runtime:latest
