@@ -1,10 +1,18 @@
-client:
-  url: http://172.18.111.33:3100/api/prom/push
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: $LOKI/api/prom/push
 
 scrape_configs:
-  - job_name: java
-    entry_parser: raw
+  - job_name: java-$DOCKER_APP
     static_configs:
-      - labels:
-          job: varlogs
+      - targets :
+          - $DOCKER_APP
+        labels:
+          job: $DOCKER_NODE-$DOCKER_APP
           __path__: /app/log/*log
