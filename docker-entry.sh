@@ -7,13 +7,20 @@ if test -z "$DOCKER_APP"; then export DOCKER_APP="UNKNOWN"; fi
 if test -z "$LOKI"; then export LOKI="http://$DEV_SERVER:3100"; fi
 if test -z "$INFLUXDB"; then export INFLUXDB="http://$DEV_SERVER:8086"; fi
 
-export LD_LIBRARY_PATH=./lib/META-INF/native:$LD_LIBRARY_PATH
-
+if test "$START_TELEFGRAF" = true;
+    then
 /usr/bin/telegraf&
+fi
 
+if test "$START_PROMTAIL" = true;
+then
 envsubst </etc/promtail/promtail.yml >/etc/promtail/promtail-env.yml
 /usr/local/bin/promtail -config.file=/etc/promtail/promtail-env.yml&
+fi
 
+
+if test "$START_SPLUNK" = true;
+then
 if test -z "$SPLUNK"; then export SPLUNK="$DEV_SERVER:9997"; fi
 
 cd /opt/splunkforwarder/bin
@@ -21,6 +28,6 @@ cd /opt/splunkforwarder/bin
 ./splunk add forward-server $SPLUNK -auth admin:admin1234
 #./splunk enable local-index -name $DOCKER_APP -auth :admin1234
 ./splunk add monitor /app/log -index $DOCKER_APP -auth admin:admin1234
-
+fi
 cd /app
 exec "$@"
